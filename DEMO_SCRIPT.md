@@ -11,12 +11,15 @@ QuickTime on the Mac over the browser tab. Practice once; keep cuts tight.
 > crash-test lab: we stage them in simulation instead."
 
 ## 0:25–1:00 — Real frames from Isaac Sim (file manager on the VM)
-Open ~/crashtestlab/datasets/test/frames — open one bright frame, one dim frame
-side by side. Then open the matching label JSON in ~/crashtestlab/datasets/test/labels.
-> "1,080 frames rendered on an L40S with Isaac Sim and Replicator. Every
-> condition is a physical quantity — lux, metres, degrees. And because the
-> simulator placed the helmet, every frame comes with pixel-perfect ground
-> truth for free — including a MEASURED occlusion fraction, not an assumed one."
+Open ~/crashtestlab/datasets_v2/test/frames — one bright frame, one dim frame
+side by side. Then the matching JSON in ~/crashtestlab/datasets_v2/test/labels.
+> "This is NVIDIA's SimReady warehouse — real shelving, pallets, floor
+> markings — and a construction worker actually WEARING the hard hat we're
+> detecting. Rendered on an L40S with Isaac Sim and Replicator. Every
+> condition is a physical quantity — lux, metres, degrees — and because the
+> simulator owns the scene, every frame ships with pixel-perfect ground truth
+> for free, including a MEASURED occlusion fraction on the worn hat, not an
+> assumed label."
 
 ## 1:00–1:45 — The reveal (terminal on the VM)
     cd ~/crashtestlab && python3 -m crashlab.pipeline diagnose \
@@ -39,8 +42,10 @@ Show scripts/full_loop.sh briefly, then the four-way table in the README.
 > to 0.85. Targeting adds a further significant +0.05 to +0.11. We can tell you
 > exactly what the aiming is worth — because we measured it."
 
-## 2:25–3:00 — The evidence (open results/coverage-report.md on GitHub)
-Scroll the report: fingerprints, CIs, regressions section, limitations.
+## 2:25–3:00 — The evidence (open dashboard/index.html from the repo)
+Open the dashboard: Failure Map tab (the miss-rate heatmap with the dark
+dim+partial cell), then Comparison tab (dumbbells + the volume-matched bars).
+Finish on results/coverage-report.md: fingerprints, CIs, limitations.
 > "Every claim ships as a versioned report: manifest fingerprints, sample
 > counts, confidence intervals, regressions with equal prominence, and what we
 > did NOT test. Automotive safety has crash-test institutions everyone trusts.

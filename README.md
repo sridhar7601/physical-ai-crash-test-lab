@@ -1,6 +1,6 @@
-# Physical AI Crash-Test Lab
+# Physical AI Site Planner
 
-**Scenario-driven validation and targeted remediation for physical-AI perception models, built on NVIDIA Omniverse / Isaac Sim / Replicator.**
+**Camera placement and threat-zone guidance for warehouse safety cameras, built on NVIDIA Omniverse / Isaac Sim physics.**
 
 Innovation Sprint 2026 · Theme: *Physical AI with NVIDIA Omniverse*
 
@@ -8,24 +8,63 @@ Innovation Sprint 2026 · Theme: *Physical AI with NVIDIA Omniverse*
 
 ## The problem
 
-A warehouse installs an AI camera that checks whether workers wear hard hats. It scores well in testing and gets signed off. Then it misses a worker in a dim corner whose helmet is half-hidden behind a pallet — the exact situation where someone gets hurt, and the exact situation nobody staged during testing, because staging dangerous conditions is slow, expensive, and sometimes unsafe.
-
-Synthetic data generation is supposed to fill this gap, but volume alone answers none of the questions that matter:
-
-- **Where exactly** is the model weak?
-- **Which data** would fix that specific weakness?
-- Did the new model **actually improve — and what did it break?**
+A warehouse installs AI safety cameras to check PPE compliance. Installers mount them wherever is convenient. Floor managers assume coverage is fine. Then a worker in a dim aisle with a partially occluded helmet goes undetected — the exact blind spot simulation would have flagged before a single screw was turned.
 
 ## What this is
 
-A crash-test lab for perception models. Car makers don't wait for real accidents; they crash cars deliberately, in controlled conditions, and publish the evidence. We do the same for AI vision:
+A **site survey tool** that tells two audiences what to do *before* cameras go live:
+
+- **Installers:** where to mount cameras (position, height, angle) and which placements to avoid
+- **Floor managers:** which zones are high-threat (dim lighting, shelf occlusion, no coverage) and what actions to take
+
+Guidance is derived from simulation-measured failure patterns — dim + partial occlusion drops detection recall to 17%; high-angle mounts in occluded zones drop to 24%.
 
 ```
-declare conditions → render controlled scenes (labels come free)
-   → evaluate → score BY CONDITION → find the hidden hole
-   → generate data aimed at that hole → retrain
-   → re-test on the SAME locked suite → versioned evidence report
+warehouse layout → zone lux + occlusion model → threat scoring
+  → camera placement recommendations → interactive site planner website
 ```
+
+## The website
+
+Three views on the SimReady `warehouse_multiple_shelves` floor:
+
+1. **Site Map** — interactive floor plan with threat or luminosity overlays; click any zone for detail
+2. **Camera Guide** — six recommended eye-level mounts with height, angle, and coverage zones; one placement flagged as avoid
+3. **Threat Board** — ranked high-threat zones with reasons and action cards for floor managers
+
+### Run locally
+
+```bash
+# generate zone data (no GPU)
+python3 -m crashlab site-plan --out webapp/src/data/site_plan.json
+
+# build the site
+cd webapp && npm install && npm run build   # -> webapp/dist/index.html
+npm run dev                                 # local dev server
+```
+
+### Quick start (backend)
+
+```bash
+python3 -m crashlab site-plan    # export camera + threat zone JSON
+python3 -m unittest discover -s tests   # 87 unit tests, no GPU
+```
+
+## What this prototype does not claim
+
+- Simulation-based guidance supports engineering review; it does not replace on-site surveys or real-world validation.
+- Zone lux values are heuristic (distance from window wall + aisle depth), not measured per-cell renders.
+- The underlying crash-test lab (helmet detection validation) remains in `crashlab/` for GPU-backed simulation runs.
+
+---
+
+## Original crash-test lab (still in repo)
+
+The repository also contains the full perception validation loop used to derive the threat scores above. See sections below for measured helmet-detection results, Isaac Sim pipeline, and evidence reports.
+
+# Physical AI Crash-Test Lab (validation backend)
+
+**Scenario-driven validation and targeted remediation for physical-AI perception models.**
 
 ## What a frame looks like
 
@@ -135,6 +174,8 @@ standalone views are generated straight from the run's artifacts:
 
 | Stage | Module | Runs on |
 |---|---|---|
+| Zone grid, threat scoring, camera placement | `crashlab/site_planner.py` | anywhere |
+| Export site plan JSON | `python3 -m crashlab site-plan` | anywhere |
 | Declare condition matrix (lux, metres, degrees — physical units) | `crashlab/schema.py` | anywhere |
 | Build suite, locked stratified train/test split | `crashlab/suite.py` | anywhere |
 | Render frames + perfect labels + measured occlusion | `crashlab/generator/` | Isaac Sim |
@@ -189,11 +230,12 @@ Automotive safety has crash-test institutions that buyers, insurers, and regulat
 ## Repository map
 
 ```
-webapp/              the product site (React + Vite, single-file build)
-crashlab/            the library (schema, suite, metrics, analysis, compare, report)
+webapp/              Site Planner website (React + Vite, single-file build)
+crashlab/            the library (site_planner, schema, suite, metrics, analysis, compare, report)
+crashlab/site_planner.py  zone threat scoring + camera placement (no GPU)
 crashlab/generator/  Isaac Sim / Replicator rendering
 crashlab/detector/   YOLO training + inference (only part importing torch)
-tests/               79 unit tests, no GPU required
+tests/               87 unit tests, no GPU required
 results/             evidence reports from the real end-to-end runs
 dashboard/           self-contained run dashboard (open in any browser)
 ops/                 AWS instance helpers (parameterised; see ops/env.example)

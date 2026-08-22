@@ -1,0 +1,660 @@
+{
+  "warehouse": "SimReady warehouse_multiple_shelves",
+  "generated_by": "crashlab site_planner",
+  "disclaimer": "Simulation-based guidance supports engineering review; it does not replace on-site surveys or real-world validation.",
+  "measured_baselines": {
+    "dim_partial_recall": 0.165,
+    "high_oblique_partial_recall": 0.238,
+    "bright_visible_recall": 0.934
+  },
+  "summary": {
+    "total_zones": 24,
+    "high_threat_zones": 15,
+    "cameras_recommended": 6,
+    "zones_needing_lighting": 9
+  },
+  "zones": [
+    {
+      "id": "A1",
+      "name": "Receiving Dock",
+      "x": -10.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 235.0,
+      "lux_bucket": "normal",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.8,
+      "reason": "Moderate lighting (235 lux) + partial shelf occlusion",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-03"
+      ]
+    },
+    {
+      "id": "B1",
+      "name": "Staging Bay",
+      "x": -6.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 333.8,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (334 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-03"
+      ]
+    },
+    {
+      "id": "C1",
+      "name": "Main Aisle North",
+      "x": -2.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 407.3,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (407 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-02",
+        "CAM-03"
+      ]
+    },
+    {
+      "id": "D1",
+      "name": "Pack Station",
+      "x": 2.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 513.3,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (513 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-02",
+        "CAM-03"
+      ]
+    },
+    {
+      "id": "E1",
+      "name": "Outbound Lane",
+      "x": 6.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 680.0,
+      "lux_bucket": "bright",
+      "occlusion": "clear",
+      "threat": "low",
+      "threat_score": 0.1,
+      "reason": "Within acceptable monitoring range",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-02",
+        "CAM-03"
+      ]
+    },
+    {
+      "id": "F1",
+      "name": "Loading Ramp",
+      "x": 10.0,
+      "y": -2.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 885.0,
+      "lux_bucket": "bright",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 1.0,
+      "reason": "partial shelf occlusion + no eye-level camera coverage",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks",
+        "Install eye-level camera (1.5\u20133 m from worker path)"
+      ],
+      "covered_by": []
+    },
+    {
+      "id": "A2",
+      "name": "Rack Row West",
+      "x": -10.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 95.0,
+      "lux_bucket": "dim",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (95 lux) + partial shelf occlusion + measured detection recall ~17% under similar conditions",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-01"
+      ]
+    },
+    {
+      "id": "B2",
+      "name": "Aisle B Intersection",
+      "x": -6.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 193.8,
+      "lux_bucket": "dim",
+      "occlusion": "clear",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (194 lux) + high risk for PPE blind spots",
+      "actions": [
+        "Add supplemental LED lighting"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-03",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Central Walkway",
+      "x": -2.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 267.3,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (267 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-02",
+        "CAM-03",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "D2",
+      "name": "Aisle C Intersection",
+      "x": 2.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 373.3,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (373 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-02",
+        "CAM-03",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "E2",
+      "name": "Pick Face East",
+      "x": 6.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 540.0,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (540 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-02"
+      ]
+    },
+    {
+      "id": "F2",
+      "name": "Rack Row East",
+      "x": 10.0,
+      "y": 3.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 745.0,
+      "lux_bucket": "bright",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.8,
+      "reason": "partial shelf occlusion",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-02"
+      ]
+    },
+    {
+      "id": "A3",
+      "name": "Deep Storage West",
+      "x": -10.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 12.0,
+      "lux_bucket": "dim",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (12 lux) + partial shelf occlusion + measured detection recall ~17% under similar conditions",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-04"
+      ]
+    },
+    {
+      "id": "B3",
+      "name": "Pallet Stack Bay",
+      "x": -6.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 53.8,
+      "lux_bucket": "dim",
+      "occlusion": "clear",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (54 lux) + high risk for PPE blind spots",
+      "actions": [
+        "Add supplemental LED lighting"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-04",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Forklift Path",
+      "x": -2.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 127.3,
+      "lux_bucket": "dim",
+      "occlusion": "clear",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (127 lux) + high risk for PPE blind spots",
+      "actions": [
+        "Add supplemental LED lighting"
+      ],
+      "covered_by": [
+        "CAM-01",
+        "CAM-02",
+        "CAM-04",
+        "CAM-05",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "D3",
+      "name": "High-Bay Storage",
+      "x": 2.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 233.3,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (233 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-02",
+        "CAM-05",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "E3",
+      "name": "Overflow Racks",
+      "x": 6.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 400.0,
+      "lux_bucket": "normal",
+      "occlusion": "clear",
+      "threat": "medium",
+      "threat_score": 0.4,
+      "reason": "Moderate lighting (400 lux)",
+      "actions": [
+        "Maintain current lighting and camera coverage"
+      ],
+      "covered_by": [
+        "CAM-02",
+        "CAM-05",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "F3",
+      "name": "Deep Storage East",
+      "x": 10.0,
+      "y": 8.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 605.0,
+      "lux_bucket": "bright",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 1.0,
+      "reason": "partial shelf occlusion + no eye-level camera coverage",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks",
+        "Install eye-level camera (1.5\u20133 m from worker path)"
+      ],
+      "covered_by": []
+    },
+    {
+      "id": "A4",
+      "name": "Dim Corner West",
+      "x": -10.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 12.0,
+      "lux_bucket": "dim",
+      "occlusion": "heavy",
+      "threat": "high",
+      "threat_score": 0.95,
+      "reason": "Dim lighting (12 lux) + heavy shelf occlusion + high risk for PPE blind spots",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-04"
+      ]
+    },
+    {
+      "id": "B4",
+      "name": "Loading Bay 4",
+      "x": -6.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 12.0,
+      "lux_bucket": "dim",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (12 lux) + partial shelf occlusion + measured detection recall ~17% under similar conditions",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-04",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "Aisle C South",
+      "x": -2.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 12.0,
+      "lux_bucket": "dim",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (12 lux) + partial shelf occlusion + measured detection recall ~17% under similar conditions",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-04",
+        "CAM-05",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "D4",
+      "name": "Blind Spot South",
+      "x": 2.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 93.3,
+      "lux_bucket": "dim",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.9,
+      "reason": "Dim lighting (93 lux) + partial shelf occlusion + measured detection recall ~17% under similar conditions",
+      "actions": [
+        "Add supplemental LED lighting",
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-05",
+        "CAM-06"
+      ]
+    },
+    {
+      "id": "E4",
+      "name": "Pallet Maze",
+      "x": 6.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 260.0,
+      "lux_bucket": "normal",
+      "occlusion": "partial",
+      "threat": "high",
+      "threat_score": 0.8,
+      "reason": "Moderate lighting (260 lux) + partial shelf occlusion",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-05"
+      ]
+    },
+    {
+      "id": "F4",
+      "name": "Dim Corner East",
+      "x": 10.0,
+      "y": 13.0,
+      "width": 4.0,
+      "height": 5.0,
+      "lux": 465.0,
+      "lux_bucket": "normal",
+      "occlusion": "heavy",
+      "threat": "high",
+      "threat_score": 0.95,
+      "reason": "Moderate lighting (465 lux) + heavy shelf occlusion",
+      "actions": [
+        "Clear sightlines near shelving or pallet stacks"
+      ],
+      "covered_by": [
+        "CAM-05"
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "id": "CAM-01",
+      "x": -4.0,
+      "y": 5.5,
+      "height_m": 1.8,
+      "angle_deg": 5.0,
+      "covers": [
+        "A1",
+        "B1",
+        "C1",
+        "A2",
+        "B2",
+        "C2",
+        "D2",
+        "A3",
+        "B3",
+        "C3"
+      ],
+      "note": "Aisle B intersection \u2014 primary PPE coverage \u00b7 Never use high-angle mount here",
+      "avoid": false
+    },
+    {
+      "id": "CAM-02",
+      "x": 4.0,
+      "y": 5.5,
+      "height_m": 1.8,
+      "angle_deg": 8.0,
+      "covers": [
+        "C1",
+        "D1",
+        "E1",
+        "C2",
+        "D2",
+        "E2",
+        "F2",
+        "C3",
+        "D3",
+        "E3"
+      ],
+      "note": "Aisle C intersection \u2014 central walkway",
+      "avoid": false
+    },
+    {
+      "id": "CAM-03",
+      "x": 0.0,
+      "y": 0.5,
+      "height_m": 1.8,
+      "angle_deg": 8.0,
+      "covers": [
+        "A1",
+        "B1",
+        "C1",
+        "D1",
+        "E1",
+        "B2",
+        "C2",
+        "D2"
+      ],
+      "note": "Main aisle north \u2014 outbound traffic",
+      "avoid": false
+    },
+    {
+      "id": "CAM-04",
+      "x": -4.0,
+      "y": 15.5,
+      "height_m": 1.8,
+      "angle_deg": 5.0,
+      "covers": [
+        "A3",
+        "B3",
+        "C3",
+        "A4",
+        "B4",
+        "C4"
+      ],
+      "note": "Loading Bay 4 \u2014 dim zone requires eye-level mount \u00b7 Never use high-angle mount here",
+      "avoid": false
+    },
+    {
+      "id": "CAM-05",
+      "x": 4.0,
+      "y": 15.5,
+      "height_m": 1.8,
+      "angle_deg": 5.0,
+      "covers": [
+        "C3",
+        "D3",
+        "E3",
+        "C4",
+        "D4",
+        "E4",
+        "F4"
+      ],
+      "note": "South blind spot \u2014 secondary coverage for pallet maze \u00b7 Never use high-angle mount here",
+      "avoid": false
+    },
+    {
+      "id": "CAM-06",
+      "x": 0.0,
+      "y": 10.5,
+      "height_m": 1.8,
+      "angle_deg": 5.0,
+      "covers": [
+        "B2",
+        "C2",
+        "D2",
+        "B3",
+        "C3",
+        "D3",
+        "E3",
+        "B4",
+        "C4",
+        "D4"
+      ],
+      "note": "Forklift path \u2014 mid-warehouse overlap \u00b7 Never use high-angle mount here",
+      "avoid": false
+    },
+    {
+      "id": "AVOID-01",
+      "x": -8.0,
+      "y": 15.5,
+      "height_m": 4.2,
+      "angle_deg": 48.0,
+      "covers": [],
+      "note": "High oblique mount in dim corner \u2014 detection recall ~24%",
+      "avoid": true
+    }
+  ]
+}

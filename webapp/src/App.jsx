@@ -1,61 +1,55 @@
 import { useMemo, useState } from "react";
 import Nav from "./components/Nav.jsx";
 import Hero from "./components/Hero.jsx";
-import Explorer from "./components/Explorer.jsx";
-import Evidence from "./components/Evidence.jsx";
-import Report from "./components/Report.jsx";
+import FloorMap from "./components/FloorMap.jsx";
+import CameraGuide from "./components/CameraGuide.jsx";
+import ThreatBoard from "./components/ThreatBoard.jsx";
+import ZoneDetail from "./components/ZoneDetail.jsx";
 import { useReveal, useActiveSection } from "./lib/useReveal.js";
-import { fmt } from "./lib/format.js";
-import evidence from "./data/evidence.json";
-import frames from "./data/frames.json";
+import sitePlan from "./data/site_plan.json";
 
-const IDS = ["explorer", "evidence", "report"];
+const IDS = ["map", "cameras", "threats"];
 
 export default function App() {
   const [active, setActive] = useState("");
+  const [selectedZone, setSelectedZone] = useState(null);
+  const [view, setView] = useState("threat");
   useReveal();
   useActiveSection(IDS, setActive);
 
-  const headline = useMemo(() => {
-    const all = [...evidence.analysis.findings, ...evidence.analysis.underpowered_slices];
-    const pick = (li, h) =>
-      all.find((f) => {
-        const c = f.constraints || {};
-        return Object.keys(c).length === 2 && c.lighting === li && c.helmet_state === h;
-      });
-    const easy = pick("bright", "visible");
-    const weak = evidence.analysis.weakest_slice;
-    const cmp = evidence.comparison;
-    return {
-      easy: easy ? fmt(easy.value, 2) : "0.93",
-      weak: weak ? fmt(weak.value, 2) : "0.17",
-      stats: [
-        [evidence.frames, "frames in locked suite"],
-        [cmp ? `${fmt(cmp.overall.baseline.value, 2)} → ${fmt(cmp.overall.candidate.value, 2)}` : "—", "overall recall"],
-        [cmp ? cmp.regressed.length : "—", "regressions"],
-        [evidence.analysis.underpowered_slices.length, "slices left unjudged"],
-      ],
-    };
-  }, []);
+  const summary = sitePlan.summary;
+  const highThreat = useMemo(
+    () => sitePlan.zones.filter((z) => z.threat === "high"),
+    []
+  );
 
   return (
     <>
       <Nav active={active} />
       <main className="shell">
-        <Hero frames={frames} headline={headline} />
-        <section><Explorer data={frames} /></section>
-        <section><Evidence data={evidence} /></section>
-        <section><Report data={evidence} /></section>
+        <Hero summary={summary} highThreat={highThreat.length} />
+        <section id="map" className="sechead">
+          <FloorMap
+            data={sitePlan}
+            view={view}
+            onViewChange={setView}
+            selectedId={selectedZone?.id}
+            onSelect={setSelectedZone}
+          />
+        </section>
+        <section id="cameras" className="sechead">
+          <CameraGuide cameras={sitePlan.cameras} zones={sitePlan.zones} />
+        </section>
+        <section id="threats" className="sechead">
+          <ThreatBoard zones={sitePlan.zones} onSelect={setSelectedZone} />
+        </section>
       </main>
+      <ZoneDetail zone={selectedZone} onClose={() => setSelectedZone(null)} />
       <footer className="site">
         <span>
-          Built on NVIDIA Omniverse · Isaac Sim 6.0 · Replicator · YOLO11n.
-          Detections at the evidence report's own thresholds.
+          Built on NVIDIA Omniverse · Isaac Sim · Physical AI zone modelling.
         </span>
-        <span>
-          Simulation coverage supports engineering review; it does not replace
-          real-world validation.
-        </span>
+        <span>{sitePlan.disclaimer}</span>
       </footer>
     </>
   );

@@ -1,13 +1,13 @@
-# Physical AI Crash-Test Lab
+# Physical AI Site Planner
 
 **Theme:** Physical AI with NVIDIA Omniverse
 
-Physical AI systems often perform well in common conditions but fail under rare combinations of lighting, occlusion, distance, camera angle, clutter, sensor behavior, or human movement. Collecting those events in the real world is slow, expensive, and sometimes unsafe. Synthetic-data generation helps, but producing more images does not automatically reveal whether a model is ready or which data would improve it.
+Warehouse safety cameras fail in predictable physical conditions — dim lighting, shelf occlusion, wrong mount angle. Staging those conditions in the real world is slow, expensive, and sometimes unsafe. Simulation reveals the blind spots; this product turns that knowledge into **actionable site guidance** before a single camera is mounted.
 
-Physical AI Crash-Test Lab is a scenario-driven validation and remediation system. Engineers define a requirement and controlled scenario factors. NVIDIA Omniverse/Isaac Sim and Replicator generate reproducible scenes with ground-truth labels and scenario metadata. The platform evaluates a perception model, groups performance by condition, identifies weak scenario clusters, and requests targeted synthetic data for those failures. A candidate model is then compared with the baseline on the same unchanged test suite. The resulting report records model version, scenario-suite version, seeds, sample counts, metrics, improvements, regressions, and known gaps.
+Physical AI Site Planner tells installers **where to place cameras** (height, angle, coverage) and tells floor managers **which zones are high-threat** (dim luminosity, occlusion, no coverage). Guidance is derived from simulation-measured failure patterns on the NVIDIA SimReady warehouse — the same lux, angle, and distance physics used in Isaac Sim.
 
-The hackathon demo tests warehouse helmet detection. A baseline model appears successful in normal scenes but performs poorly with low lighting, partial helmet occlusion, high camera angles, and background clutter. The lab reveals the weak combination, generates targeted training frames, and either fine-tunes a small candidate model or evaluates a prepared candidate. Both versions run against the fixed test suite, producing an honest before-and-after comparison and a simulation-coverage report.
+The hackathon demo uses the `warehouse_multiple_shelves` environment. A 6×4 zone grid maps luminosity and occlusion risk; threat scores come from measured detection recall under dim + partial occlusion (17%) and high-angle + partial (24%). Six eye-level camera mounts are recommended; high-angle placements in dim corners are flagged as avoid.
 
-The buyers are manufacturing safety leaders, warehouse operators, robotics teams, and computer-vision platform leaders. Presidio can sell simulation-readiness assessments, Omniverse environments, synthetic-data engineering, GPU/cloud infrastructure, MLOps integration, and recurring validation.
+Buyers are warehouse operators, manufacturing safety leaders, and site deployment engineers. Presidio can sell site surveys, Omniverse environment modelling, camera placement consulting, and recurring validation.
 
-This prototype does not certify safety or prove real-world performance. Its differentiation is the reproducible failure-to-targeted-data-to-evidence loop, not synthetic image generation alone. It should be selected only if the team has a proven NVIDIA environment and practical Omniverse experience.
+This prototype does not certify safety or replace on-site surveys. Its value is proactive guidance from simulation-measured physical conditions, not live camera feeds or object detection alone.

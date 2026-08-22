@@ -1,7 +1,7 @@
 const LINKS = [
-  ["explorer", "Explorer"],
-  ["evidence", "Evidence"],
-  ["report", "Report"],
+  ["map", "Site Map"],
+  ["cameras", "Camera Guide"],
+  ["threats", "Threat Board"],
 ];
 
 export default function Nav({ active }) {
@@ -9,7 +9,7 @@ export default function Nav({ active }) {
     <nav className="nav">
       <a className="wordmark" href="#top" style={{ textDecoration: "none", padding: 0 }}>
         <span className="sq" aria-hidden="true" />
-        Crash-Test Lab
+        Site Planner
       </a>
       <div className="links">
         {LINKS.map(([id, label]) => (

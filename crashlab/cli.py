@@ -3,6 +3,7 @@
     python3 -m crashlab demo          run the full loop on fixture data
     python3 -m crashlab build-suite   write the suite and locked split
     python3 -m crashlab factors       print the declared buckets
+    python3 -m crashlab site-plan     export camera placement + threat zones
 
 `demo` is also the stage fallback: it exercises every stage of the loop with no
 GPU, no simulator, and no network, so there is always something to show.
@@ -20,6 +21,7 @@ from .compare import compare
 from .evaluate import EvalConfig, evaluate
 from .report import build_report
 from .schema import FACTORS, PHYSICAL_RANGES
+from .site_planner import build_site_plan, export_site_plan
 from .suite import (
     build_suite,
     remediation_manifest,
@@ -34,6 +36,21 @@ def _rule(title: str) -> None:
     print("=" * 78)
     print(f" {title}")
     print("=" * 78)
+
+
+def cmd_site_plan(args: argparse.Namespace) -> int:
+    out = Path(args.out)
+    path = export_site_plan(out)
+    plan = build_site_plan()
+    summary = plan["summary"]
+    _rule("SITE PLAN")
+    print(f"warehouse            {plan['warehouse']}")
+    print(f"zones                {summary['total_zones']}")
+    print(f"high-threat zones    {summary['high_threat_zones']}")
+    print(f"cameras recommended  {summary['cameras_recommended']}")
+    print(f"zones needing light  {summary['zones_needing_lighting']}")
+    print(f"wrote                {path}")
+    return 0
 
 
 def cmd_factors(args: argparse.Namespace) -> int:
@@ -244,6 +261,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_factors = sub.add_parser("factors", help="print the declared condition buckets")
     p_factors.set_defaults(func=cmd_factors)
+
+    p_site = sub.add_parser("site-plan", help="export camera placement and threat zone plan")
+    p_site.add_argument(
+        "--out",
+        default="webapp/src/data/site_plan.json",
+        help="output JSON path for the site planner website",
+    )
+    p_site.set_defaults(func=cmd_site_plan)
 
     p_build = sub.add_parser("build-suite", help="build and write the suite + locked split")
     p_build.add_argument("--suite", default=DEFAULT_SUITE)

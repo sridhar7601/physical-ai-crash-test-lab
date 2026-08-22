@@ -46,6 +46,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                              "test that misses most of what could break.")
     parser.add_argument("--resume", action="store_true",
                         help="skip scenarios whose label file already exists")
+    parser.add_argument("--scene", default="warehouse", choices=("warehouse", "primitive"),
+                        help="'warehouse' uses NVIDIA SimReady assets (photoreal); "
+                             "'primitive' is the dependency-free fallback")
     return parser.parse_args(argv)
 
 
@@ -110,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
             "manifest_fingerprint": manifest.fingerprint,
             "scenario_suite": manifest.suite,
             "data_source": DATA_SOURCE,
+            "scene": args.scene,
             "complete": complete,
             "requested": len(scenarios),
             "rendered": len(rendered),
@@ -124,9 +128,13 @@ def main(argv: list[str] | None = None) -> int:
         import numpy as np
         import omni.replicator.core as rep
 
-        from .scene import WarehouseScene, plan_frame
+        from .scene import plan_frame
 
-        scene = WarehouseScene(resolution=(args.width, args.height))
+        if args.scene == "warehouse":
+            from .scene_warehouse import WarehouseSceneV2 as Scene
+        else:
+            from .scene import WarehouseScene as Scene
+        scene = Scene(resolution=(args.width, args.height))
 
         rgb_annot = rep.AnnotatorRegistry.get_annotator("rgb")
         bbox_annot = rep.AnnotatorRegistry.get_annotator("bounding_box_2d_tight")
@@ -212,8 +220,21 @@ def _decode_boxes(bbox) -> tuple[list[dict], list[dict]]:
     for row in data:
         semantic_id = int(row["semanticId"])
         entry = id_to_labels.get(str(semantic_id), {})
-        label = entry.get("class") if isinstance(entry, dict) else str(entry)
-        if not label:
+        raw = entry.get("class") if isinstance(entry, dict) else str(entry)
+        if not raw:
+            continue
+        # Two realities of labelling on real assets, discovered on the SimReady
+        # warehouse: (1) semantics inherit down the prim hierarchy, so the hat
+        # mesh under a person-labelled root reports the combined class
+        # "hard_hat,person"; (2) NVIDIA assets carry their own semantics (rack,
+        # pallet, box, floor...). Split the combined class and keep only ours —
+        # the hat wins over person for the hat mesh, and scenery is dropped.
+        parts = {part.strip() for part in str(raw).split(",")}
+        if "hard_hat" in parts:
+            label = "hard_hat"
+        elif "person" in parts:
+            label = "person"
+        else:
             continue
         x1, y1 = float(row["x_min"]), float(row["y_min"])
         x2, y2 = float(row["x_max"]), float(row["y_max"])

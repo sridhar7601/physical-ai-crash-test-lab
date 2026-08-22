@@ -29,45 +29,84 @@ declare conditions → render controlled scenes (labels come free)
 
 ## What a frame looks like
 
-| bright + fully visible | dim + partially occluded |
+| bright, helmet worn and visible | dim, helmet partially occluded |
 |---|---|
-| ![bright](docs/images/docs_bright_visible.png) | ![dim](docs/images/docs_dim_partial.png) |
+| ![bright](docs/images/docs_bright_visible.jpg) | ![dim](docs/images/docs_dim_partial.jpg) |
 
-Same scene, two declared conditions — the right-hand frame is what the baseline model is blind in. Geometry is deliberately primitive proxy shapes (a cylinder worker, a cube hard hat — the hat hovers due to a known scale quirk, disclosed in limitations): the lab measures detection under controlled physical conditions, and the ground truth is exact regardless of visual fidelity. Swapping in SimReady warehouse assets changes the art, not the method.
+NVIDIA's SimReady warehouse (`warehouse_multiple_shelves.usd`) with the
+`male_adult_construction_01` character — the hard hat is the character's own
+mesh, labelled and toggled per condition, so the detector is asked about a
+genuinely worn helmet. In the right-hand frame a neutral occluder sits on the
+camera-to-helmet sightline; the achieved occlusion is measured per frame by the
+renderer (`occlusionRatio`), not asserted. The character stands in its rest
+pose; conditions vary lighting (scaling all twelve stage lights), camera
+distance, elevation, and azimuth per scenario seed.
 
 ## Measured results (real, not mocked)
 
-Everything below was produced by this repository running end-to-end on an NVIDIA L40S: 2,220 rendered frames, four real YOLO11n models trained and evaluated on a fingerprint-locked 540-frame test suite.
+Everything below was produced by this repository running end to end on an
+NVIDIA L40S: 2,328 SimReady-warehouse frames rendered, four YOLO11n models
+trained, all evaluated on a fingerprint-locked 864-frame test suite
+(`aae5a75f676c0b5a9d5cd8d0530ad154`) with 16 frames per condition cell.
 
-### 1. The overall score hides the hole
+### 1. The overall score hides the holes
 
-We trained a baseline detector only on well-lit, unoccluded frames — what a real team gets from filming in a bright aisle. Overall hard-hat recall: **0.449**. Broken down by condition, the analyser found — without being told what was withheld from training:
+The baseline detector was trained only on well-lit, unoccluded frames — what a
+team gets from filming in a bright aisle. Overall: recall 0.681, precision
+0.969, a production-plausible model. Broken down by condition, the analyser
+found two blind spots unaided:
 
 | Condition slice | Recall (95% CI) | n |
 |---|---|---|
-| bright + fully visible | 0.983 [0.91–1.00] | 60 |
-| **dim + partially occluded** | **0.034 [0.01–0.12]** | 59 |
+| bright + helmet fully visible | 0.934 [0.86–0.97] | 76 |
+| **dim + partially occluded** | **0.165 [0.10–0.26]** | 79 |
+| **high camera + partially occluded** | **0.238 [0.16–0.34]** | 84 |
 
-A signed-off-looking model that is functionally blind in the condition most likely to hurt someone.
+A model that looks signed-off-ready is close to blind exactly where a worker
+gets hurt: dark aisles and heads half-hidden behind racking.
 
-### 2. Closing the hole — and the experiment most demos skip
+### 2. Closing the hole — on the same locked suite
 
-The naive claim would be "remediation took 0.034 → 0.932." That conflates *more data* with *aimed data*. So we ran the volume-matched control:
+The lab turned the worst finding into a render request (600 frames aimed at
+dim + partial, plus one-bucket-adjacent conditions), retrained, and re-ran the
+byte-identical suite:
 
-| Arm | Training set (identical volume where marked) | dim+partial recall |
+| Slice | Baseline | Candidate | Δ |
+|---|---|---|---|
+| dim + partially occluded | 0.165 | **0.949** | **+0.785** |
+| high camera + partially occluded | 0.238 | 0.869 | +0.631 |
+| any partial occlusion | 0.462 | 0.933 | +0.471 |
+| overall hard-hat recall | 0.681 | 0.941 | +0.260 |
+
+26 slices improved, 0 regressed, dangerous-miss rate 0.7%, false alarms nearly
+halved. Every number carries its sample count; 36 underpowered slices received
+no verdict at all.
+
+### 3. The control most demos skip — run twice, with different answers
+
+"0.165 → 0.949" conflates *more data* with *aimed data*, so we ran the
+volume-matched control: arm B adds 208 frames sampled from **all** conditions,
+arm C adds 208 frames **aimed at the measured weakness** — identical volume
+(385 training images each), identical locked suite.
+
+| Arm | dim+partial (n=79) | overall |
 |---|---|---|
-| A — baseline | 195 easy frames | 0.034 |
-| B — bulk | *403 frames: easy + 250 sampled from ALL conditions | 0.847 |
-| C — targeted | *403 frames: easy + 250 aimed at the measured weakness | **0.932** |
+| A — baseline, easy footage only | 0.165 | 0.681 |
+| B — bulk, +208 all-conditions | 0.911 | 0.930 |
+| C — targeted, +208 at the weakness | 0.949 | 0.941 |
 
-Findings, stated honestly:
+On this photoreal suite, **coverage is the medicine**: representative bulk
+data recovers most of the deficit, and targeting's consistent edge (+0.038 on
+the target slice, +0.011 overall) does not clear significance — so the
+comparator classifies it *unchanged* rather than claiming a win. On the
+earlier primitive-geometry suite (preserved in
+[results/v1-primitive/](results/v1-primitive/)), the same experiment found
+targeting significantly better (+0.051 overall). That contrast is the product
+point: **whether targeted generation is worth paying for is an empirical
+question that changes with the domain — and this instrument measures it
+instead of assuming it.**
 
-- **Most of the gain comes from covering hard conditions at all** (A→B: +0.813).
-- **Targeting adds a real, statistically significant refinement** at equal volume: overall +0.051 (significant), occluded-helmet slice +0.107 (significant), the exact target cell +0.085 (inconclusive at n=59 — our own tooling refuses to call it, and says so).
-
-The product's value is **discovery and evidence**: it found a 3.4%-recall blind spot nobody knew existed, told us which data addresses it, and proved the outcome on an untouched suite — including what the fix did *not* improve.
-
-### 3. Evidence, not vibes
+### 4. Evidence, not vibes
 
 Every comparison in this repo:
 
@@ -77,7 +116,11 @@ Every comparison in this repo:
 - reports **regressions with the same prominence as wins**;
 - records seeds, model hashes, and suite versions so any frame is regenerable.
 
-See [results/coverage-report.md](results/coverage-report.md) and [results/fair-control-report.md](results/fair-control-report.md).
+See [results/coverage-report.md](results/coverage-report.md),
+[results/fair-control-report.md](results/fair-control-report.md), and the
+interactive [dashboard/index.html](dashboard/index.html) — four screens
+(suite, failure map, remediation, comparison) generated from the run's own
+artifacts by `python3 -m crashlab.dashboard`.
 
 ## How it works
 
@@ -114,7 +157,7 @@ python3 -m crashlab build-suite --out artifacts
 ## What this prototype does not claim
 
 - It does **not** certify safety; simulated coverage does not prove real-world performance, and the synthetic-to-real gap is stated, not quantified.
-- Scene geometry is primitive stand-ins (cylinder worker, cube hat; a scale quirk leaves the hat floating above the worker — consistent across every frame and both models, so comparisons hold). Absolute numbers won't transfer to reality; **comparisons between model versions on the same suite** are the meaningful output.
+- The worker character stands in a static rest pose; motion, pose variety and multiple workers are untested. `visible`-bucket frames can still carry incidental self-occlusion from the wearer's own head — measured and recorded per frame rather than assumed away. Absolute numbers won't transfer to reality; **comparisons between model versions on the same suite** are the meaningful output.
 - Lighting buckets map to uncalibrated simulator intensity; ordering is meaningful, lux values are nominal.
 - Ultralytics YOLO is AGPL-3.0 — fine for a prototype, to be replaced (e.g. NVIDIA TAO) for productization.
 
@@ -132,6 +175,7 @@ crashlab/generator/  Isaac Sim / Replicator rendering
 crashlab/detector/   YOLO training + inference (only part importing torch)
 tests/               79 unit tests, no GPU required
 results/             evidence reports from the real end-to-end runs
+dashboard/           self-contained run dashboard (open in any browser)
 ops/                 AWS instance helpers (parameterised; see ops/env.example)
 PLAN.md              full product/research/build plan
 ```

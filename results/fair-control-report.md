@@ -1,14 +1,14 @@
 # Physical AI Crash-Test Lab — Coverage and Comparison Report
 
-- **Scenario suite:** `warehouse_ppe_v1`
-- **Test manifest:** `warehouse_ppe_v1-test`
-- **Manifest fingerprint:** `52c6a41371a41ba3e6c82e287429c790`
-- **Baseline model:** `helmet-detector@arm-bulk-all` (fingerprint `359aca11e185cebeed43b1287dc6fd9e`)
-- **Candidate model:** `helmet-detector@arm-targeted` (fingerprint `4deba81e051acad493af5f33db9f04f8`)
-- **Frames evaluated:** 540
+- **Scenario suite:** `warehouse_ppe_v2`
+- **Test manifest:** `warehouse_ppe_v2-test`
+- **Manifest fingerprint:** `aae5a75f676c0b5a9d5cd8d0530ad154`
+- **Baseline model:** `helmet-detector@arm-bulk` (fingerprint `071cd41feced957d3a58683bf9300392`)
+- **Candidate model:** `helmet-detector@candidate-v2` (fingerprint `f214366b1bfcd687be647348d1b4d148`)
+- **Frames evaluated:** 864
 - **Data source:** `isaac_sim_replicator`
 - **Schema version:** `1.0.0`
-- **Generated:** 2026-08-21T21:24:24Z
+- **Generated:** 2026-08-22T03:43:37Z
 
 ## 1. Evaluation configuration
 
@@ -49,12 +49,12 @@ condition breakdown in section 4 exists to interrogate.
 
 | Metric | Value |
 | --- | --- |
-| hard_hat recall | 0.898 [0.86–0.93] (n=354) |
-| hard_hat precision | 0.909 [0.87–0.93] (n=350) |
-| person recall | 1.000 [0.99–1.00] (n=540) |
-| frame accuracy (compliance verdict) | 0.946 [0.92–0.96] (n=540) |
-| **dangerous miss rate** | **0.000 [0.00–0.02] (n=180)** |
-| false alarm rate | 0.081 [0.06–0.11] (n=360) |
+| hard_hat recall | 0.930 [0.90–0.95] (n=455) |
+| hard_hat precision | 0.964 [0.94–0.98] (n=439) |
+| person recall | 0.932 [0.91–0.95] (n=827) |
+| frame accuracy (compliance verdict) | 0.833 [0.81–0.86] (n=864) |
+| **dangerous miss rate** | **0.000 [0.00–0.01] (n=288)** |
+| false alarm rate | 0.250 [0.22–0.29] (n=576) |
 
 *Dangerous miss* = the scene contained no hard hat and the system reported the
 worker as compliant. *False alarm* = a compliant worker was flagged. These are
@@ -68,25 +68,24 @@ confidence interval. Slices with fewer than 20 samples are
 excluded from the ranking and listed separately in section 5.
 
 | Condition slice | Dimension | Frames | Metric (95% CI) |
-
 | --- | --- | --- | --- |
-| `distance×helmet_state=far+partial` | distance×helmet_state | 60 | 0.683 [0.56–0.79] (n=60) |
-| `lighting×distance=bright+far` | lighting×distance | 60 | 0.800 [0.65–0.90] (n=40) |
-| `lighting×distance=normal+far` | lighting×distance | 60 | 0.825 [0.68–0.91] (n=40) |
-| `camera_angle×helmet_state=high_oblique+partial` | camera_angle×helmet_state | 90 | 0.789 [0.69–0.86] (n=90) |
-| `lighting×helmet_state=normal+partial` | lighting×helmet_state | 60 | 0.814 [0.70–0.89] (n=59) |
-| `lighting×helmet_state=bright+partial` | lighting×helmet_state | 60 | 0.817 [0.70–0.89] (n=60) |
-| `lighting×helmet_state=dim+partial` | lighting×helmet_state | 60 | 0.847 [0.73–0.92] (n=59) |
-| `lighting×distance=dim+near` | lighting×distance | 60 | 0.895 [0.76–0.96] (n=38) |
-| `helmet_state=partial` | helmet_state | 180 | 0.826 [0.76–0.87] (n=178) |
-| `lighting×distance=bright+near` | lighting×distance | 60 | 0.897 [0.76–0.96] (n=39) |
-| `distance=far` | distance | 180 | 0.842 [0.77–0.90] (n=120) |
-| `lighting×distance=dim+far` | lighting×distance | 60 | 0.900 [0.77–0.96] (n=40) |
+| `lighting×distance=normal+far` | lighting×distance | 96 | 0.778 [0.64–0.87] (n=45) |
+| `distance×helmet_state=far+partial` | distance×helmet_state | 96 | 0.821 [0.71–0.89] (n=67) |
+| `camera_angle×helmet_state=high_oblique+partial` | camera_angle×helmet_state | 144 | 0.845 [0.75–0.91] (n=84) |
+| `lighting×distance=dim+far` | lighting×distance | 96 | 0.878 [0.76–0.94] (n=49) |
+| `distance=far` | distance | 288 | 0.855 [0.79–0.90] (n=138) |
+| `lighting×distance=bright+far` | lighting×distance | 96 | 0.909 [0.79–0.96] (n=44) |
+| `distance×helmet_state=far+visible` | distance×helmet_state | 96 | 0.887 [0.79–0.94] (n=71) |
+| `lighting×distance=dim+mid` | lighting×distance | 96 | 0.917 [0.80–0.97] (n=48) |
+| `lighting×distance=bright+mid` | lighting×distance | 96 | 0.929 [0.81–0.98] (n=42) |
+| `lighting×helmet_state=normal+partial` | lighting×helmet_state | 96 | 0.904 [0.82–0.95] (n=73) |
+| `distance×helmet_state=mid+partial` | distance×helmet_state | 96 | 0.910 [0.82–0.96] (n=67) |
+| `lighting×helmet_state=dim+partial` | lighting×helmet_state | 96 | 0.911 [0.83–0.96] (n=79) |
 | _… 23 further slices omitted_ | | | |
 
-**Weakest adequately-powered slice:** `distance×helmet_state=far+partial` at 0.683 [0.56–0.79] (n=60).
+**Weakest adequately-powered slice:** `lighting×distance=normal+far` at 0.778 [0.64–0.87] (n=45).
 
-**Worst factor interaction:** `distance×helmet_state=far+partial` at 0.683 [0.56–0.79] (n=60) — a combination effect that the single-factor margins average away.
+**Worst factor interaction:** `lighting×distance=normal+far` at 0.778 [0.64–0.87] (n=45) — a combination effect that the single-factor margins average away.
 
 ## 5. Coverage gaps and underpowered slices
 
@@ -96,18 +95,18 @@ conclusion in either direction.
 
 | Condition slice | Dimension | Frames | Metric (95% CI) |
 | --- | --- | --- | --- |
-| `cell=normal+high_oblique+far+partial+low` | condition_cell | 10 | 0.500 [0.24–0.76] (n=10) |
-| `cell=bright+eye_level+far+partial+low` | condition_cell | 10 | 0.600 [0.31–0.83] (n=10) |
-| `cell=bright+high_oblique+far+partial+low` | condition_cell | 10 | 0.600 [0.31–0.83] (n=10) |
-| `cell=dim+eye_level+near+partial+low` | condition_cell | 10 | 0.667 [0.35–0.88] (n=9) |
-| `cell=normal+high_oblique+mid+partial+low` | condition_cell | 10 | 0.700 [0.40–0.89] (n=10) |
-| `cell=bright+high_oblique+near+partial+low` | condition_cell | 10 | 0.800 [0.49–0.94] (n=10) |
-| `cell=dim+eye_level+far+partial+low` | condition_cell | 10 | 0.800 [0.49–0.94] (n=10) |
-| `cell=dim+high_oblique+far+partial+low` | condition_cell | 10 | 0.800 [0.49–0.94] (n=10) |
-| `cell=dim+high_oblique+mid+partial+low` | condition_cell | 10 | 0.800 [0.49–0.94] (n=10) |
-| `cell=normal+eye_level+far+partial+low` | condition_cell | 10 | 0.800 [0.49–0.94] (n=10) |
-| `cell=normal+eye_level+near+visible+low` | condition_cell | 10 | 0.875 [0.53–0.98] (n=8) |
-| `cell=bright+eye_level+near+visible+low` | condition_cell | 10 | 0.889 [0.57–0.98] (n=9) |
+| `cell=normal+high_oblique+far+partial+low` | condition_cell | 16 | 0.333 [0.10–0.70] (n=6) |
+| `cell=bright+high_oblique+mid+partial+low` | condition_cell | 16 | 0.600 [0.23–0.88] (n=5) |
+| `cell=dim+high_oblique+far+partial+low` | condition_cell | 16 | 0.636 [0.35–0.85] (n=11) |
+| `cell=normal+high_oblique+far+visible+low` | condition_cell | 16 | 0.667 [0.35–0.88] (n=9) |
+| `cell=dim+high_oblique+mid+partial+low` | condition_cell | 16 | 0.778 [0.45–0.94] (n=9) |
+| `cell=normal+high_oblique+mid+partial+low` | condition_cell | 16 | 0.857 [0.49–0.97] (n=7) |
+| `cell=dim+high_oblique+mid+visible+low` | condition_cell | 16 | 0.889 [0.57–0.98] (n=9) |
+| `cell=bright+high_oblique+far+partial+low` | condition_cell | 16 | 1.000 [0.57–1.00] (n=5) |
+| `cell=bright+high_oblique+mid+visible+low` | condition_cell | 16 | 1.000 [0.61–1.00] (n=6) |
+| `cell=bright+eye_level+far+partial+low` | condition_cell | 16 | 0.867 [0.62–0.96] (n=15) |
+| `cell=normal+eye_level+far+partial+low` | condition_cell | 16 | 0.867 [0.62–0.96] (n=15) |
+| `cell=bright+eye_level+far+visible+low` | condition_cell | 16 | 0.875 [0.64–0.97] (n=16) |
 | _… 24 further slices omitted_ | | | |
 
 **Explicitly not tested in this suite:**
@@ -121,13 +120,13 @@ conclusion in either direction.
 
 ## 6. Baseline versus candidate
 
-Both models evaluated on manifest `warehouse_ppe_v1-test`, fingerprint
-`52c6a41371a41ba3e6c82e287429c790` — byte-identical for both runs. Neither
+Both models evaluated on manifest `warehouse_ppe_v2-test`, fingerprint
+`aae5a75f676c0b5a9d5cd8d0530ad154` — byte-identical for both runs. Neither
 model was trained on these frames.
 
 | | Baseline | Candidate | Δ |
 | --- | --- | --- | --- |
-| overall `hard_hat_recall` | 0.898 [0.86–0.93] (n=354) | 0.949 [0.92–0.97] (n=354) | +0.051 |
+| overall `hard_hat_recall` | 0.930 [0.90–0.95] (n=455) | 0.941 [0.92–0.96] (n=455) | +0.011 |
 
 A change is called material at |Δ| ≥ 0.05 and
 significant at 95% by a two-proportion z-test on the difference. Slices
@@ -137,17 +136,7 @@ inconclusive rather than as a win.
 
 ### 6.1 Improved
 
-| Condition slice | Frames | Baseline | Candidate | Δ | Verdict |
-| --- | --- | --- | --- | --- | --- |
-
-| `distance×helmet_state=mid+partial` | 60 | 0.900 [0.80–0.95] (n=60) | 0.983 [0.91–1.00] (n=60) | +0.083 | improved |
-| `lighting=bright` | 180 | 0.891 [0.82–0.94] (n=119) | 0.975 [0.93–0.99] (n=119) | +0.084 | improved |
-| `camera_angle×helmet_state=eye_level+partial` | 90 | 0.864 [0.78–0.92] (n=88) | 0.966 [0.90–0.99] (n=88) | +0.102 | improved |
-| `helmet_state=partial` | 180 | 0.826 [0.76–0.87] (n=178) | 0.933 [0.89–0.96] (n=178) | +0.107 | improved |
-| `camera_angle×helmet_state=high_oblique+partial` | 90 | 0.789 [0.69–0.86] (n=90) | 0.900 [0.82–0.95] (n=90) | +0.111 | improved |
-| `lighting×distance=bright+far` | 60 | 0.800 [0.65–0.90] (n=40) | 0.950 [0.83–0.99] (n=40) | +0.150 | improved |
-| `lighting×helmet_state=bright+partial` | 60 | 0.817 [0.70–0.89] (n=60) | 0.967 [0.89–0.99] (n=60) | +0.150 | improved |
-| `distance×helmet_state=far+partial` | 60 | 0.683 [0.56–0.79] (n=60) | 0.867 [0.76–0.93] (n=60) | +0.183 | improved |
+_None._
 
 ### 6.2 Regressed
 
@@ -158,17 +147,7 @@ _None._
 Changed by more than the material threshold, but not significantly for the
 sample size available. Not a win and not a loss.
 
-| Condition slice | Frames | Baseline | Candidate | Δ | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| `lighting×distance=dim+mid` | 60 | 0.950 [0.83–0.99] (n=40) | 1.000 [0.91–1.00] (n=40) | +0.050 | inconclusive |
-| `distance×helmet_state=near+partial` | 60 | 0.897 [0.79–0.95] (n=58) | 0.948 [0.86–0.98] (n=58) | +0.052 | inconclusive |
-| `lighting×distance=dim+near` | 60 | 0.895 [0.76–0.96] (n=38) | 0.947 [0.83–0.99] (n=38) | +0.053 | inconclusive |
-| `camera_angle=high_oblique` | 270 | 0.883 [0.83–0.92] (n=180) | 0.939 [0.89–0.97] (n=180) | +0.056 | inconclusive |
-| `distance=far` | 180 | 0.842 [0.77–0.90] (n=120) | 0.917 [0.85–0.95] (n=120) | +0.075 | inconclusive |
-| `lighting×distance=bright+near` | 60 | 0.897 [0.76–0.96] (n=39) | 0.974 [0.87–1.00] (n=39) | +0.077 | inconclusive |
-| `lighting×helmet_state=dim+partial` | 60 | 0.847 [0.73–0.92] (n=59) | 0.932 [0.84–0.97] (n=59) | +0.085 | inconclusive |
-| `lighting×helmet_state=normal+partial` | 60 | 0.814 [0.70–0.89] (n=59) | 0.898 [0.80–0.95] (n=59) | +0.085 | inconclusive |
-| `lighting×distance=normal+far` | 60 | 0.825 [0.68–0.91] (n=40) | 0.925 [0.80–0.97] (n=40) | +0.100 | inconclusive |
+_None._
 
 ### 6.4 No verdict — insufficient samples
 
@@ -177,18 +156,18 @@ Listed for completeness so thin coverage stays visible. These slices are
 
 | Condition slice | Frames | Baseline | Candidate | Δ | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| `cell=dim+eye_level+far+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 0.900 [0.60–0.98] (n=10) | -0.100 | underpowered |
-| `cell=dim+high_oblique+far+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 0.900 [0.60–0.98] (n=10) | -0.100 | underpowered |
-| `cell=normal+high_oblique+mid+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 0.900 [0.60–0.98] (n=10) | -0.100 | underpowered |
-| `cell=normal+high_oblique+near+partial+low` | 10 | 1.000 [0.72–1.00] (n=10) | 0.900 [0.60–0.98] (n=10) | -0.100 | underpowered |
-| `cell=bright+eye_level+far+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=bright+eye_level+mid+partial+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=bright+eye_level+mid+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=bright+eye_level+near+partial+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=bright+eye_level+near+visible+low` | 10 | 0.889 [0.57–0.98] (n=9) | 0.889 [0.57–0.98] (n=9) | +0.000 | underpowered |
-| `cell=bright+high_oblique+far+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=bright+high_oblique+mid+visible+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
-| `cell=dim+eye_level+mid+partial+low` | 10 | 1.000 [0.72–1.00] (n=10) | 1.000 [0.72–1.00] (n=10) | +0.000 | underpowered |
+| `cell=bright+high_oblique+near+partial+low` | 16 | 1.000 [0.80–1.00] (n=15) | 0.933 [0.70–0.99] (n=15) | -0.067 | underpowered |
+| `cell=normal+eye_level+far+partial+low` | 16 | 0.867 [0.62–0.96] (n=15) | 0.800 [0.55–0.93] (n=15) | -0.067 | underpowered |
+| `cell=bright+eye_level+far+visible+low` | 16 | 0.875 [0.64–0.97] (n=16) | 0.875 [0.64–0.97] (n=16) | +0.000 | underpowered |
+| `cell=bright+eye_level+mid+partial+low` | 16 | 1.000 [0.80–1.00] (n=15) | 1.000 [0.80–1.00] (n=15) | +0.000 | underpowered |
+| `cell=bright+eye_level+mid+visible+low` | 16 | 0.938 [0.72–0.99] (n=16) | 0.938 [0.72–0.99] (n=16) | +0.000 | underpowered |
+| `cell=bright+eye_level+near+partial+low` | 16 | 1.000 [0.81–1.00] (n=16) | 1.000 [0.81–1.00] (n=16) | +0.000 | underpowered |
+| `cell=bright+eye_level+near+visible+low` | 16 | 1.000 [0.81–1.00] (n=16) | 1.000 [0.81–1.00] (n=16) | +0.000 | underpowered |
+| `cell=bright+high_oblique+far+partial+low` | 16 | 1.000 [0.57–1.00] (n=5) | 1.000 [0.57–1.00] (n=5) | +0.000 | underpowered |
+| `cell=bright+high_oblique+far+visible+low` | 16 | 1.000 [0.68–1.00] (n=8) | 1.000 [0.68–1.00] (n=8) | +0.000 | underpowered |
+| `cell=bright+high_oblique+mid+partial+low` | 16 | 0.600 [0.23–0.88] (n=5) | 0.600 [0.23–0.88] (n=5) | +0.000 | underpowered |
+| `cell=bright+high_oblique+mid+visible+low` | 16 | 1.000 [0.61–1.00] (n=6) | 1.000 [0.61–1.00] (n=6) | +0.000 | underpowered |
+| `cell=bright+high_oblique+near+visible+low` | 16 | 0.929 [0.69–0.99] (n=14) | 0.929 [0.69–0.99] (n=14) | +0.000 | underpowered |
 | _… 24 further slices omitted_ | | | | | |
 
 ## 7. Limitations and what this report does not claim
@@ -211,10 +190,9 @@ rebuilt on any machine at any time.
 
 | Artifact | Identity |
 | --- | --- |
-| scenario suite | `warehouse_ppe_v1` |
-| test manifest | `warehouse_ppe_v1-test` |
-| manifest fingerprint | `52c6a41371a41ba3e6c82e287429c790` |
+| scenario suite | `warehouse_ppe_v2` |
+| test manifest | `warehouse_ppe_v2-test` |
+| manifest fingerprint | `aae5a75f676c0b5a9d5cd8d0530ad154` |
 | schema version | `1.0.0` |
-| baseline model fingerprint | `359aca11e185cebeed43b1287dc6fd9e` |
-| candidate model fingerprint | `4deba81e051acad493af5f33db9f04f8` |
-
+| baseline model fingerprint | `071cd41feced957d3a58683bf9300392` |
+| candidate model fingerprint | `f214366b1bfcd687be647348d1b4d148` |

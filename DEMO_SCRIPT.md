@@ -1,61 +1,104 @@
-# Demo video script — 3 minutes
+# Demo video — what to say, shot by shot (3:00)
 
-Record the DCV desktop (https://<instance-ip>:8443) with a screen recorder, or
-QuickTime on the Mac over the browser tab. Practice once; keep cuts tight.
+**Record:** the published site (one browser tab, full screen) plus two short
+cuts to the VM desktop. Do one dry run; keep the cursor slow and deliberate.
 
-## 0:00–0:25 — The trap (slides or README on screen)
-> "A warehouse installs an AI camera to check hard hats. It tests at 98%
-> recall and gets signed off. Then it misses a worker in a dim corner, helmet
-> half-hidden behind a pallet — the exact case that causes an injury.
-> You can't stage 500 dangerous conditions in a real warehouse. So we built a
-> crash-test lab: we stage them in simulation instead."
+**Site:** https://claude.ai/code/artifact/1a2641ec-1bd2-4944-b121-a4ca7f52cfbe
 
-## 0:25–1:00 — Real frames from Isaac Sim (file manager on the VM)
-Open ~/crashtestlab/datasets_v2/test/frames — one bright frame, one dim frame
-side by side. Then the matching JSON in ~/crashtestlab/datasets_v2/test/labels.
-> "This is NVIDIA's SimReady warehouse — real shelving, pallets, floor
-> markings — and a construction worker actually WEARING the hard hat we're
-> detecting. Rendered on an L40S with Isaac Sim and Replicator. Every
-> condition is a physical quantity — lux, metres, degrees — and because the
-> simulator owns the scene, every frame ships with pixel-perfect ground truth
-> for free, including a MEASURED occlusion fraction on the worn hat, not an
-> assumed label."
+**Golden rules while narrating**
+- Say every number with its context ("0.17 recall, 79 samples"), never a bare percentage.
+- Never say "proves it's safe". Say "measured on a simulated suite".
+- Let the Explorer flip land in silence for one beat. That silence is the demo.
 
-## 1:00–1:45 — The reveal (terminal on the VM)
-    cd ~/crashtestlab && python3 -m crashlab.pipeline diagnose \
-      --dataset datasets/test --predictions preds/baseline \
-      --manifest artifacts/warehouse_ppe_v1-test.json \
-      --model-name helmet-detector --model-version baseline-v1 --out /tmp/d
-Point at the output:
-> "We trained a real YOLO detector on well-lit, unoccluded footage — what a
-> team actually collects. Overall recall 0.45. But scored BY CONDITION:
-> bright and visible, 0.98. Dim and partially occluded — 0.034. Three percent.
-> The overall number hid a blind spot exactly where people get hurt.
-> Nobody told the analyser what we withheld from training. It found this."
+---
 
-## 1:45–2:25 — The fix, and the honest experiment
-Show scripts/full_loop.sh briefly, then the four-way table in the README.
-> "The lab turns the worst slice into a render request: 600 frames aimed at
-> dim-plus-occluded. Retrain, re-test on the byte-identical suite: 0.03 to 0.93.
-> But is that targeting, or just MORE data? We ran the control most demos skip:
-> same volume, one arm random frames, one arm targeted. Coverage alone gets you
-> to 0.85. Targeting adds a further significant +0.05 to +0.11. We can tell you
-> exactly what the aiming is worth — because we measured it."
+## 0:00–0:22 · The trap
+*Shot: site hero. The two frames auto-rotate behind you.*
 
-## 2:25–3:00 — Hands-on proof, then the evidence
-Open demo/index.html (the Explorer). Click **dim + partial** → Baseline: the
-frame shows a worker, helmet half-hidden, and NO detection. Press `c` →
-Candidate: the box snaps onto the helmet with its confidence. That ten-second
-flip is the whole product. Then the dashboard's Failure Map (dark dim+partial
-cell) and Comparison (volume-matched bars), and close on
-results/coverage-report.md: fingerprints, CIs, limitations.
-> "Every claim ships as a versioned report: manifest fingerprints, sample
-> counts, confidence intervals, regressions with equal prominence, and what we
-> did NOT test. Automotive safety has crash-test institutions everyone trusts.
-> Physical AI has nothing comparable. This is that missing institution —
-> and for Presidio, a readiness assessment that becomes environments,
-> synthetic-data engineering, and managed validation of every model release."
+> "A warehouse installs an AI camera to check that workers wear hard hats. It
+> tested at ninety-three percent recall in good lighting, and it got signed
+> off. Then it missed a worker in a dim aisle with his helmet half-hidden
+> behind racking — seventeen percent recall in that condition. The average
+> hid it. You cannot stage five hundred dangerous warehouse conditions to
+> find that, so we built the warehouse in simulation instead. This is a
+> crash-test lab for AI vision."
 
-## Backup if the VM is down
-`python3 -m crashlab demo` on any laptop replays the entire loop on fixtures —
-it prints a banner marking outputs as synthetic placeholders.
+## 0:22–0:50 · Why simulation earns its place
+*Shot: scroll slowly to the Explorer; hover a frame so the HUD reads out.*
+
+> "These are NVIDIA Isaac Sim renders of the SimReady warehouse — real
+> racking, real pallets, and a worker actually wearing the hard hat we're
+> detecting. Every condition is a physical quantity: lux, metres, degrees of
+> camera elevation. And because the simulator owns the scene, every frame
+> ships with pixel-perfect ground truth for free — including the occlusion
+> fraction, measured by the renderer, not assumed by us. Two thousand three
+> hundred frames, rendered on an L40S."
+
+## 0:50–1:40 · The reveal — the money shot
+*Shot: click "Play the story", or drive it manually. Manual is stronger.*
+
+Click **bright / visible** → box on the helmet, verdict DETECTED.
+> "Good light, helmet visible. The model finds it. This is the test the model passed."
+
+Click **dim / partial**, model still Baseline. **Pause. Say nothing for a beat.**
+> "Same warehouse. Dim aisle, helmet partly behind racking. No detection at
+> all. In production, this worker's PPE state is simply invisible — in exactly
+> the condition where somebody gets hurt."
+
+Press **c** (candidate). Box snaps onto the helmet.
+> "Same frame. Same locked test suite. This is the model after the lab told us
+> which data to generate — six hundred frames aimed at that specific
+> condition. Zero point one seven to zero point nine five."
+
+Optional, if pacing allows — click **bright / absent**:
+> "And the opposite failure: no helmet worn, but the model reports one. A
+> bare-headed worker passing as compliant. The lab counts that separately,
+> because those two mistakes have very different consequences."
+
+## 1:40–2:20 · The evidence
+*Shot: scroll to Evidence. Hover the dark heatmap cell, then the arms chart.*
+
+> "Here's the same run, scored by condition instead of averaged. Every cell
+> carries its sample count and a confidence interval, and the dashed cells got
+> no verdict at all — too little evidence to claim anything either way."
+
+Hover the three-bar chart.
+> "And this is the experiment most demos skip. Was the gain from *targeting*,
+> or just from *more data*? So we trained a control on the identical amount of
+> untargeted data. Coverage alone gets you to zero point nine one. Targeting
+> gets zero point nine five — a consistent edge that does not clear
+> significance on this suite, and our own tooling reports it as unchanged
+> rather than claiming a win. On the earlier, simpler scene, targeting *was*
+> significant. Whether targeted generation is worth paying for is an empirical
+> question — and this is the instrument that answers it."
+
+## 2:20–2:45 · The report
+*Shot: scroll to Report.*
+
+> "Every run ships this: the verdict, the limitations we refuse to paper over,
+> and the reproduction identity — suite fingerprint, both model hashes, the
+> thresholds. Seeds derive by hash, so any frame in this report can be
+> regenerated on any machine. Twenty-six conditions improved, zero regressed,
+> and the regressions section is built to be as prominent as the wins."
+
+## 2:45–3:00 · Close
+*Shot: back to hero, or the repo.*
+
+> "Automotive safety has crash-test institutions that buyers, insurers and
+> regulators all trust. Physical AI works around people every day and has
+> nothing comparable. For Presidio that's a readiness assessment that becomes
+> Omniverse environments, synthetic-data engineering, and managed validation of
+> every model release. Simulation coverage supports engineering review — it
+> doesn't replace real-world validation. That line is in every report we ship."
+
+---
+
+## Fallback if anything breaks live
+`python3 -m crashlab demo` replays the whole loop on fixtures on any laptop,
+and prints a banner marking the output as synthetic placeholder data.
+
+## Recording checklist
+- [ ] Browser zoom 100%, window 1920×1080, no bookmarks bar
+- [ ] Dark mode (the site is dark-first — it looks best)
+- [ ] Explorer: click through the sequence once before recording
+- [ ] Mic: no room echo; one take per section is fine, cut between

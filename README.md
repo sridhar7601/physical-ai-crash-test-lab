@@ -116,9 +116,12 @@ Every comparison in this repo:
 - reports **regressions with the same prominence as wins**;
 - records seeds, model hashes, and suite versions so any frame is regenerable.
 
-See [results/coverage-report.md](results/coverage-report.md) and
+**Live site — [the whole thing, interactive](https://claude.ai/code/artifact/1a2641ec-1bd2-4944-b121-a4ca7f52cfbe)**
+(React + Vite, built from this repo's run artifacts; source in [webapp/](webapp/)).
+
+See also [results/coverage-report.md](results/coverage-report.md) and
 [results/fair-control-report.md](results/fair-control-report.md). Two
-interactive views are generated straight from the run's artifacts:
+standalone views are generated straight from the run's artifacts:
 
 - **[demo/index.html](demo/index.html) — the Crash-Test Explorer.** Pick a
   condition cell, see a real frame from the locked suite, and flip between
@@ -143,6 +146,16 @@ interactive views are generated straight from the run's artifacts:
 Deliberate split: **the analysis half is pure Python stdlib** — no torch, no omni — so it runs identically on a laptop, in CI, and inside Isaac Sim's bundled interpreter. 79 unit tests. The GPU half hands over plain JSON.
 
 Ground truth is free and perfect: the simulator *placed* the helmet, so it knows the exact box — and Replicator's `occlusionRatio` means "partially occluded" is **measured per frame**, not asserted.
+
+### The site
+
+```bash
+cd webapp && npm install && npm run build   # -> webapp/dist/index.html, self-contained
+npm run dev                                 # local dev server
+```
+
+Run data is baked in from `webapp/src/data/` (exported from a real run), so the
+build has no network dependency and the page works offline.
 
 ### Quick start
 
@@ -176,6 +189,7 @@ Automotive safety has crash-test institutions that buyers, insurers, and regulat
 ## Repository map
 
 ```
+webapp/              the product site (React + Vite, single-file build)
 crashlab/            the library (schema, suite, metrics, analysis, compare, report)
 crashlab/generator/  Isaac Sim / Replicator rendering
 crashlab/detector/   YOLO training + inference (only part importing torch)

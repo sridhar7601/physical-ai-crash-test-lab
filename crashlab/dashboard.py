@@ -68,6 +68,7 @@ def collect(report_path: Path, fair_path: Path | None,
         "limitations": report.get("limitations", []),
         "untested": report.get("untested", []),
         "synthetic": report.get("synthetic_placeholder", False),
+        "summary": None,
     }
 
     if fair_path and fair_path.exists():
@@ -110,6 +111,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arm", action="append", default=[],
                         help='repeatable: "KEY|label|results_dir"')
     parser.add_argument("--remediation", default=None)
+    parser.add_argument("--summary", default=None,
+                        help="optional executive-summary.md from crashlab.narrate")
     parser.add_argument("--out", required=True)
     args = parser.parse_args(argv)
 
@@ -118,10 +121,19 @@ def main(argv: list[str] | None = None) -> int:
         key, label, path = spec.split("|", 2)
         arms.append((key, label, Path(path)))
 
+    summary_text = None
+    if args.summary and Path(args.summary).exists():
+        raw = Path(args.summary).read_text()
+        # strip the markdown heading + provenance line; keep the prose
+        parts = [b.strip() for b in raw.split("\n\n") if b.strip()]
+        prose = [b for b in parts if not b.startswith("#") and not b.startswith("*Generated")]
+        summary_text = "\n\n".join(prose) or None
+
     data = collect(Path(args.report),
                    Path(args.fair) if args.fair else None,
                    arms,
                    Path(args.remediation) if args.remediation else None)
+    data["summary"] = summary_text
     out = build(data, Path(args.out))
     print(f"[dashboard] wrote {out} ({out.stat().st_size} bytes)")
     return 0
@@ -133,26 +145,27 @@ TEMPLATE = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{color-scheme:light;
- --page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
- --grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,.10);
- --s250:#86b6ef;--s400:#3987e5;--s550:#1c5cab;--s700:#0d366b;
+:root{color-scheme:dark;
+ --page:#0e0f0e;--surface:#161716;--panel:#1b1c1b;--ink:#f4f4f1;--ink2:#b9b9b2;--muted:#84847d;
+ --grid:#262725;--axis:#3a3b38;--border:rgba(255,255,255,.09);--hazard:#eda100;
+ --s250:#9ec5f4;--s400:#5598e7;--s550:#256abf;--s700:#184f95;
  --seq100:#cde2fb;--seq200:#9ec5f4;--seq300:#6da7ec;--seq400:#3987e5;--seq500:#256abf;--seq600:#184f95;--seq700:#0d366b;
- --critical:#d03b3b;--good:#0ca30c;--goodtext:#006300}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;
- --page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#898781;
- --grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);
- --s250:#9ec5f4;--s400:#5598e7;--s550:#256abf;--s700:#184f95;
- --critical:#d03b3b;--good:#0ca30c;--goodtext:#0ca30c}}
-:root[data-theme=dark]{color-scheme:dark;
- --page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#898781;
- --grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);
- --s250:#9ec5f4;--s400:#5598e7;--s550:#256abf;--s700:#184f95;
- --critical:#d03b3b;--good:#0ca30c;--goodtext:#0ca30c}
+ --critical:#e66767;--good:#0ca30c;--goodtext:#0ca30c}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){color-scheme:light;
+ --page:#f4f4f0;--surface:#fdfdfb;--panel:#f8f8f5;--ink:#101010;--ink2:#4c4c48;--muted:#8a8a83;
+ --grid:#e3e3dc;--axis:#c6c6be;--border:rgba(16,16,16,.10);--hazard:#b57b00;
+ --s250:#86b6ef;--s400:#3987e5;--s550:#1c5cab;--s700:#0d366b;
+ --critical:#c53030;--good:#0a7a0a;--goodtext:#0a7a0a}}
+:root[data-theme=light]{color-scheme:light;
+ --page:#f4f4f0;--surface:#fdfdfb;--panel:#f8f8f5;--ink:#101010;--ink2:#4c4c48;--muted:#8a8a83;
+ --grid:#e3e3dc;--axis:#c6c6be;--border:rgba(16,16,16,.10);--hazard:#b57b00;
+ --s250:#86b6ef;--s400:#3987e5;--s550:#1c5cab;--s700:#0d366b;
+ --critical:#c53030;--good:#0a7a0a;--goodtext:#0a7a0a}
 *{box-sizing:border-box;margin:0}
+body::before{content:"";display:block;height:5px;margin:0 calc(-1*clamp(14px,4vw,44px)) 24px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,transparent 14px 28px);opacity:.9}
 body{background:var(--page);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;padding:26px clamp(14px,4vw,44px) 64px}
 .mono{font-family:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace}
-.eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--hazard)}
 h1{font-size:24px;font-weight:600;letter-spacing:-.01em;margin:4px 0 10px}
 .sub{color:var(--ink2);font-size:12.5px;margin-bottom:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;display:flex;gap:18px;flex-wrap:wrap}
 .sub span b{color:var(--ink);font-weight:500}
@@ -162,7 +175,9 @@ h1{font-size:24px;font-weight:600;letter-spacing:-.01em;margin:4px 0 10px}
 .tab .n{color:var(--muted);margin-right:7px;font-family:'IBM Plex Mono',monospace;font-weight:500}
 .tab[aria-selected=true]{color:var(--ink);border-color:var(--s400);box-shadow:inset 0 -2px 0 var(--s400)}
 .tab:focus-visible{outline:2px solid var(--s400);outline-offset:2px}
-.screen{display:none}.screen.active{display:block}
+.screen{display:none}.screen.active{display:block;animation:fadein .28s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.active{animation:none}}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .tile .k{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
@@ -183,6 +198,16 @@ svg{display:block;max-width:100%}
 .legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .warn{border-left:3px solid var(--critical);padding:8px 12px;font-size:13px;color:var(--ink2);margin-bottom:14px;background:var(--surface);border-radius:0 8px 8px 0}
 .footnote{font-size:12px;color:var(--muted);margin-top:8px}
+.reportwrap{max-width:760px}
+.big{font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.01em;line-height:1.3;margin:6px 0 14px;text-wrap:balance}
+.big .mono{color:var(--s400)}
+.summary{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--hazard);border-radius:0 12px 12px 0;padding:18px 22px;font-size:15.5px;line-height:1.65;color:var(--ink2)}
+.summary .who{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.summary p{color:var(--ink2)} .summary p+p{margin-top:10px}
+.pending{border-style:dashed;color:var(--muted);font-style:normal}
+.idgrid{display:grid;grid-template-columns:max-content 1fr;gap:7px 18px;font-size:12.5px}
+.idgrid dt{color:var(--muted)} .idgrid dd{font-family:'IBM Plex Mono',monospace;color:var(--ink2);word-break:break-all}
+.limits li{margin:7px 0 7px 18px;font-size:13px;color:var(--ink2)}
 </style></head><body>
 <div class="eyebrow">Scenario-driven validation &amp; targeted remediation</div>
 <h1>Physical AI Crash-Test Lab</h1>
@@ -194,11 +219,13 @@ svg{display:block;max-width:100%}
  <button class="tab" role="tab" data-s="failure"><span class="n">2</span>Failure map</button>
  <button class="tab" role="tab" data-s="remed"><span class="n">3</span>Remediation</button>
  <button class="tab" role="tab" data-s="compare"><span class="n">4</span>Comparison</button>
+ <button class="tab" role="tab" data-s="report"><span class="n">5</span>Report</button>
 </div>
 <section class="screen" id="s-suite"></section>
 <section class="screen" id="s-failure"></section>
 <section class="screen" id="s-remed"></section>
 <section class="screen" id="s-compare"></section>
+<section class="screen" id="s-report"></section>
 <div class="tt" id="tt"></div>
 <script>
 const DATA = /*__DATA__*/null;
@@ -374,6 +401,36 @@ if(DATA.synthetic)$("#synthwarn").innerHTML=`<div class="warn"><b>Synthetic plac
   document.querySelectorAll("#arms .ab").forEach(g=>{const m=arms[+g.dataset.i];
    hover(g,`<b>${esc(m.key)} — ${esc(m.label)}</b><br>dim+partial recall ${fmt(m.target_value)} (n=${m.target_n})<br>95% CI ${m.target_ci?fmt(m.target_ci[0],2)+"–"+fmt(m.target_ci[1],2):"n/a"}<br>overall ${fmt(m.overall)}`);});
  }}
+}
+
+/* ---------- screen 5: report ---------- */
+{
+ const s=$("#s-report"), c=DATA.comparison, w=DATA.analysis.weakest_slice;
+ const o=c?c.overall:null;
+ const head = (w&&o)?`The suite exposed <span class="mono">${esc(w.slice)}</span> at recall <span class="mono">${fmt(w.value,2)}</span>; after targeted data, <span class="mono">${fmt(o.baseline.value,2)} &rarr; ${fmt(o.candidate.value,2)}</span> overall with ${c.regressed.length} regressions.`
+   :"Failure discovery run — no candidate evaluated.";
+ const summary = DATA.summary
+   ? `<div class="summary"><div class="who">Executive summary — generated from measured artifacts, number-checked</div>${DATA.summary.split(/\n\n+/).map(x=>`<p>${esc(x)}</p>`).join("")}</div>`
+   : `<div class="summary pending"><div class="who">Executive summary</div><p>Not yet generated for this run. Produce it with the team's OpenRouter key: <span class="mono">python3 -m crashlab.narrate --report … --out …</span> and rebuild this page — the text is fact-checked against the run before it is accepted.</p></div>`;
+ s.innerHTML=`<div class="reportwrap">
+  <div class="big">${head}</div>
+  ${summary}
+  <div class="card" style="margin-top:16px"><h2>Limitations — what this run does not claim</h2>
+   <ul class="limits">${DATA.limitations.map(l=>`<li>${esc(l)}</li>`).join("")}</ul></div>
+  <div class="card"><h2>Not tested in this suite</h2>
+   <ul class="limits">${DATA.untested.map(l=>`<li>${esc(l)}</li>`).join("")}</ul></div>
+  <div class="card"><h2>Reproduction identity</h2>
+   <dl class="idgrid">
+    <dt>scenario suite</dt><dd>${esc(DATA.suite)}</dd>
+    <dt>test manifest</dt><dd>${esc(DATA.manifest)} &middot; ${DATA.frames} frames</dd>
+    <dt>manifest fingerprint</dt><dd>${esc(DATA.fingerprint)}</dd>
+    <dt>baseline model</dt><dd>${esc(DATA.models.baseline.ref)} &middot; ${esc(DATA.models.baseline.fingerprint)}</dd>
+    ${DATA.models.candidate?`<dt>candidate model</dt><dd>${esc(DATA.models.candidate.ref)} &middot; ${esc(DATA.models.candidate.fingerprint)}</dd>`:""}
+    <dt>thresholds</dt><dd>IoU ${DATA.config.iou_threshold} &middot; confidence ${DATA.config.score_threshold} &middot; min n ${DATA.config.min_samples_for_finding}</dd>
+    <dt>generated</dt><dd>${esc(DATA.generated_at)}</dd>
+   </dl>
+   <div class="footnote">Seeds derive by hash from (suite, scenario id); any frame is regenerable on any machine.</div></div>
+ </div>`;
 }
 
 /* ---------- tabs ---------- */

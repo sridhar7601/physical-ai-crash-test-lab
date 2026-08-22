@@ -116,11 +116,17 @@ Every comparison in this repo:
 - reports **regressions with the same prominence as wins**;
 - records seeds, model hashes, and suite versions so any frame is regenerable.
 
-See [results/coverage-report.md](results/coverage-report.md),
-[results/fair-control-report.md](results/fair-control-report.md), and the
-interactive [dashboard/index.html](dashboard/index.html) — four screens
-(suite, failure map, remediation, comparison) generated from the run's own
-artifacts by `python3 -m crashlab.dashboard`.
+See [results/coverage-report.md](results/coverage-report.md) and
+[results/fair-control-report.md](results/fair-control-report.md). Two
+interactive views are generated straight from the run's artifacts:
+
+- **[demo/index.html](demo/index.html) — the Crash-Test Explorer.** Pick a
+  condition cell, see a real frame from the locked suite, and flip between
+  baseline and candidate to watch their actual detections drawn over the
+  image (keyboard: `b` / `c` / `n`). The dim + occluded cell is the one to try.
+- **[dashboard/index.html](dashboard/index.html) — the evidence dashboard.**
+  Four screens (suite, failure map, remediation, comparison) with the
+  heatmap, ranked weak slices, dumbbells, and the volume-matched control.
 
 ## How it works
 

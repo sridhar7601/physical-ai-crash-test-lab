@@ -42,10 +42,13 @@ Show scripts/full_loop.sh briefly, then the four-way table in the README.
 > to 0.85. Targeting adds a further significant +0.05 to +0.11. We can tell you
 > exactly what the aiming is worth — because we measured it."
 
-## 2:25–3:00 — The evidence (open dashboard/index.html from the repo)
-Open the dashboard: Failure Map tab (the miss-rate heatmap with the dark
-dim+partial cell), then Comparison tab (dumbbells + the volume-matched bars).
-Finish on results/coverage-report.md: fingerprints, CIs, limitations.
+## 2:25–3:00 — Hands-on proof, then the evidence
+Open demo/index.html (the Explorer). Click **dim + partial** → Baseline: the
+frame shows a worker, helmet half-hidden, and NO detection. Press `c` →
+Candidate: the box snaps onto the helmet with its confidence. That ten-second
+flip is the whole product. Then the dashboard's Failure Map (dark dim+partial
+cell) and Comparison (volume-matched bars), and close on
+results/coverage-report.md: fingerprints, CIs, limitations.
 > "Every claim ships as a versioned report: manifest fingerprints, sample
 > counts, confidence intervals, regressions with equal prominence, and what we
 > did NOT test. Automotive safety has crash-test institutions everyone trusts.
